@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import styles from "./form.module.css";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "./utils/firebase";
 
 function Form({ todos, setTodos }) {
   const [todo, setTodo] = useState({
@@ -7,9 +9,19 @@ function Form({ todos, setTodos }) {
     done: false,
   });
 
-  function handleSubmit(e) {
+  // function handleSubmit(e) {
+  //   e.preventDefault();
+  //   setTodos([...todos, todo]);
+  //   setTodo({name: "",done:false});
+  // }
+
+  const createTodo = async (e) => {
     e.preventDefault();
-    setTodos([...todos, todo]);
+    if (todo.name.trim()===''){
+      alert("Please enter a valid todo name");
+      return;
+    }
+    await addDoc(collection(db,'todos'), todo);
     setTodo({name: "",done:false});
   }
 
@@ -24,7 +36,7 @@ function Form({ todos, setTodos }) {
       <button
         className={styles.modernButton}
         type="submit"
-        onClick={(e) => handleSubmit(e)}
+        onClick={(e) => createTodo(e)}
       >
         add
       </button>
